@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SBPDCL Training Certificate Generator — A4 Landscape</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <style>
+    :root {
+      --cert-navy: #1c2c5e;
+      --cert-banner: #222c62;
+      --cert-ink: #111827;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      margin: 0;
+    }
+
+    /* Certificate Exact A4 Landscape Canvas (297mm x 210mm @ 96dpi ≈ 1122.5px x 793.7px) */
+    #certificate-stage {
+      width: 1122px;
+      height: 794px;
+      transform-origin: top left;
+      background: #ffffff;
+      box-shadow: 0 20px 50px -12px rgba(15, 23, 42, 0.25), 0 4px 14px -2px rgba(15, 23, 42, 0.1);
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .cert-outer-pad {
+      width: 100%;
+      height: 100%;
+      padding: 30px 32px 32px 32px;
+      background: #ffffff;
+    }
+
+    .cert-border-box {
+      width: 100%;
+      height: 100%;
+      border: 2.5px solid #1e293b;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 10px 44px 20px 44px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .cert-watermark {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.08;
+    }
+
+    .cert-layer {
+      position: relative;
+      z-index: 2;
+    }
+
+    .cert-header-wrap {
+      position: relative;
+      width: 100%;
+      height: 292px;
+      flex-shrink: 0;
+    }
+
+    .cert-arch-svg {
+      position: absolute;
+      top: 0px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1010px;
+      height: 275px;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    .cert-arch-text {
+      font-family: "Arial Black", "Segoe UI Black", Impact, Arial, sans-serif;
+      font-weight: 900;
+      font-size: 27.5px;
+      letter-spacing: 0.7px;
+      fill: #1b2c5c;
+      text-transform: uppercase;
+    }
+
+    .cert-center-identity {
+      position: absolute;
+      top: 86px;
+      left: 0;
+      right: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .cert-logo-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 6px;
+    }
+
+    .cert-logo-box img,
+    .cert-logo-box svg {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .cert-div-title {
+      font-family: "Segoe UI", Calibri, Arial, sans-serif;
+      font-weight: 800;
+      font-size: 18px;
+      line-height: 1.24;
+      letter-spacing: 0.5px;
+      color: #111827;
+      text-transform: uppercase;
+    }
+
+    .cert-pill-banner {
+      margin-top: 8px;
+      background-color: #222d65;
+      color: #ffffff;
+      padding: 5px 38px 7px 38px;
+      border-radius: 9px;
+      display: inline-block;
+      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.16);
+    }
+
+    .cert-pill-text {
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-weight: 800;
+      font-size: 27px;
+      letter-spacing: 2.2px;
+      line-height: 1.1;
+      text-transform: uppercase;
+      border-bottom: 2.5px solid #ffffff;
+      padding-bottom: 1px;
+      display: inline-block;
+    }
+
+    .cert-body {
+      font-family: Calibri, "Segoe UI", Arial, sans-serif;
+      font-size: 19px;
+      line-height: 1.62;
+      color: #111827;
+      text-align: justify;
+      margin: 4px 10px 0 10px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .cert-body p {
+      margin: 0 0 11px 0;
+      text-indent: 54px;
+    }
+
+    .cert-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .cert-strong {
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .cert-underline {
+      font-weight: 700;
+      color: #0f172a;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      text-decoration-thickness: 1.5px;
+    }
+
+    .cert-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin: 8px 10px 0 10px;
+      padding-top: 4px;
+      flex-shrink: 0;
+    }
+
+    .cert-footer-left {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      min-width: 280px;
+    }
+
+    .cert-seal-wrap {
+      margin-bottom: 6px;
+      margin-left: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cert-seal-wrap img,
+    .cert-seal-wrap svg {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .cert-meta-table {
+      font-family: Calibri, "Segoe UI", Arial, sans-serif;
+      font-size: 16.5px;
+      line-height: 1.55;
+      color: #111827;
+    }
+
+    .cert-meta-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      min-height: 26px;
+    }
+
+    .cert-meta-label {
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .cert-meta-value {
+      font-weight: 700;
+      color: #1e3a8a;
+      min-width: 140px;
+      display: inline-block;
+    }
+
+    .cert-meta-blank-line {
+      display: inline-block;
+      min-width: 135px;
+      border-bottom: 1.25px dotted #64748b;
+      height: 18px;
+    }
+
+    .cert-footer-right {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      min-width: 310px;
+    }
+
+    .cert-sign-space {
+      height: 76px;
+      width: 240px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 6px;
+    }
+
+    .cert-sign-title {
+      font-family: "Segoe UI", Calibri, Arial, sans-serif;
+      font-weight: 800;
+      font-size: 15.5px;
+      line-height: 1.3;
+      color: #111827;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .cert-sign-sub {
+      font-family: "Segoe UI", Calibri, Arial, sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      line-height: 1.32;
+      color: #111827;
+      text-transform: uppercase;
+    }
+
+    /* Form styling */
+    .form-section-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #475569;
+      margin-bottom: 0.65rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 0.25rem;
+    }
+
+    .field-input {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 0.5rem;
+      padding: 0.48rem 0.7rem;
+      font-size: 0.875rem;
+      color: #0f172a;
+      background: #ffffff;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .field-input:focus {
+      outline: none;
+      border-color: #1d4ed8;
+      box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.12);
+    }
+
+    /* Print Rules — Single Exact A4 Landscape Page with Safe Printable Margins */
+    @page {
+      size: A4 landscape;
+      margin: 0;
+    }
+
+    @media print {
+      html, body {
+        width: 297mm !important;
+        height: 209mm !important;
+        max-height: 209mm !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        overflow: hidden !important;
+        display: block !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .no-print {
+        display: none !important;
+      }
+
+      main,
+      #preview-wrapper,
+      #preview-canvas-area,
+      #preview-scaler {
+        display: block !important;
+        position: static !important;
+        width: 297mm !important;
+        height: 209mm !important;
+        max-width: 297mm !important;
+        max-height: 209mm !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: none !important;
+        background: #ffffff !important;
+        overflow: hidden !important;
+      }
+
+      #certificate-stage {
+        width: 297mm !important;
+        height: 208mm !important;
+        max-height: 208mm !important;
+        transform: none !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        page-break-before: avoid !important;
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
+        break-before: avoid !important;
+        break-after: avoid !important;
+        break-inside: avoid !important;
+      }
+
+      .cert-outer-pad {
+        width: 297mm !important;
+        height: 208mm !important;
+        padding: 9mm 10mm 11mm 10mm !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Top Navigation Bar -->
+  <header class="no-print sticky top-0 z-30 bg-slate-900 text-white border-b border-slate-800 shadow-sm">
+    <div class="max-w-[1680px] mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-amber-400/15 border border-amber-400/40 flex items-center justify-center text-amber-300 font-bold text-sm">
+          SB
+        </div>
+        <div>
+          <h1 class="text-sm sm:text-base font-bold tracking-tight leading-tight">SBPDCL Certificate Generator</h1>
+          <p class="text-[11px] text-slate-400">A4 Landscape (297 × 210 mm) · Blank Ref No. &amp; Official Signature Ready</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <button id="btn-next-student" type="button"
+          class="px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-700 transition cursor-pointer"
+          title="Clear student name, roll no., and reg no. while keeping logo and division details">
+          New Student
+        </button>
+        <button id="btn-reset-sample" type="button"
+          class="px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-700 transition cursor-pointer">
+          Load Sample
+        </button>
+        <button id="btn-print" type="button"
+          class="px-4 py-1.5 text-xs sm:text-sm font-semibold rounded-lg bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition flex items-center gap-2 cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6v-8z"/>
+          </svg>
+          Print / Save A4 PDF
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Toast Banner -->
+  <div id="toast" class="no-print fixed bottom-5 right-5 z-50 hidden bg-slate-900 text-white text-xs sm:text-sm font-medium px-4 py-2.5 rounded-lg shadow-xl border border-slate-700"></div>
+
+  <!-- Main Workspace -->
+  <main class="flex-1 max-w-[1680px] w-full mx-auto flex flex-col lg:flex-row">
+
+    <!-- Left Input Sidebar -->
+    <aside class="no-print w-full lg:w-[410px] xl:w-[430px] bg-white border-b lg:border-b-0 lg:border-r border-slate-200 lg:h-[calc(100vh-61px)] lg:overflow-y-auto flex-shrink-0">
+      <div class="p-4 sm:p-5 space-y-6">
+
+        <!-- 1. SBPDCL Logo Upload -->
+        <section class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+          <div class="form-section-title">
+            <span>1. SBPDCL Logo</span>
+            <button id="btn-reset-logo" type="button" class="text-[11px] font-semibold text-blue-700 hover:text-blue-900 normal-case tracking-normal cursor-pointer">
+              Use Default Emblem
+            </button>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <div id="logo-thumb-box" class="w-16 h-16 rounded-full bg-white border border-slate-300 flex items-center justify-center overflow-hidden p-1 flex-shrink-0">
+              <!-- Preview synced by JS -->
+            </div>
+            <div class="flex-1 min-w-0">
+              <label for="input-logo"
+                class="inline-flex items-center justify-center w-full px-3 py-2 text-xs font-semibold rounded-lg bg-white border border-slate-300 hover:border-blue-500 hover:bg-blue-50/50 text-slate-700 cursor-pointer transition">
+                Upload SBPDCL Logo (PNG / JPG / SVG)
+              </label>
+              <input id="input-logo" type="file" accept="image/*" class="hidden" />
+              <p id="logo-filename" class="text-[11px] text-slate-500 mt-1.5 truncate">Using built-in SBPDCL emblem</p>
+            </div>
+          </div>
+
+          <div class="mt-3 pt-3 border-t border-slate-200">
+            <div class="flex items-center justify-between text-xs text-slate-600 mb-1">
+              <label for="input-logo-size" class="font-medium">Logo Size</label>
+              <span id="logo-size-readout" class="font-semibold text-slate-800">96 px</span>
+            </div>
+            <input id="input-logo-size" type="range" min="64" max="130" value="96" class="w-full accent-blue-600 cursor-pointer" />
+          </div>
+        </section>
+
+        <!-- 1b. Certified Seal Upload -->
+        <section class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+          <div class="form-section-title">
+            <span>Certified Seal Symbol</span>
+            <button id="btn-reset-seal" type="button" class="text-[11px] font-semibold text-blue-700 hover:text-blue-900 normal-case tracking-normal cursor-pointer">
+              Use Default Seal
+            </button>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <div id="seal-thumb-box" class="w-16 h-16 rounded-lg bg-white border border-slate-300 flex items-center justify-center overflow-hidden p-1 flex-shrink-0">
+              <!-- Preview synced by JS -->
+            </div>
+            <div class="flex-1 min-w-0">
+              <label for="input-seal"
+                class="inline-flex items-center justify-center w-full px-3 py-2 text-xs font-semibold rounded-lg bg-white border border-slate-300 hover:border-blue-500 hover:bg-blue-50/50 text-slate-700 cursor-pointer transition">
+                Upload Certified Seal (PNG / JPG / SVG)
+              </label>
+              <input id="input-seal" type="file" accept="image/*" class="hidden" />
+              <p id="seal-filename" class="text-[11px] text-slate-500 mt-1.5 truncate">Using built-in Certified seal</p>
+            </div>
+          </div>
+
+          <div class="mt-3 pt-3 border-t border-slate-200">
+            <div class="flex items-center justify-between text-xs text-slate-600 mb-1">
+              <label for="input-seal-size" class="font-medium">Seal Size</label>
+              <span id="seal-size-readout" class="font-semibold text-slate-800">94 px</span>
+            </div>
+            <input id="input-seal-size" type="range" min="60" max="130" value="94" class="w-full accent-blue-600 cursor-pointer" />
+          </div>
+        </section>
+
+        <!-- 2. Student & Academic Details -->
+        <section>
+          <div class="form-section-title">
+            <span>2. Student &amp; Academic Details</span>
+          </div>
+          <div class="space-y-3">
+            <div>
+              <label for="input-name" class="field-label">Student Full Name</label>
+              <input id="input-name" type="text" class="field-input" placeholder="e.g. ANAND KUMAR GUPTA" />
+            </div>
+
+            <div>
+              <label for="input-college" class="field-label">College / Institute Name</label>
+              <input id="input-college" type="text" class="field-input" placeholder="e.g. GOVERNMENT POLYTECHNIC COLLEGE, JEHANABAD (BIHAR)" />
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label for="input-semester" class="field-label">Semester / Year</label>
+                <input id="input-semester" type="text" class="field-input" placeholder="e.g. 5th SEMESTER" />
+              </div>
+              <div>
+                <label for="input-session" class="field-label">Session</label>
+                <input id="input-session" type="text" class="field-input" placeholder="e.g. 2024-2027" />
+              </div>
+            </div>
+
+            <div>
+              <label for="input-course" class="field-label">Course / Branch</label>
+              <input id="input-course" type="text" class="field-input" placeholder="e.g. DIPLOMA IN ELECTRICAL ENGINEERING" />
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label for="input-roll" class="field-label">Roll No.</label>
+                <input id="input-roll" type="text" class="field-input" placeholder="e.g. 009/EE/24" />
+              </div>
+              <div>
+                <label for="input-reg" class="field-label">Registration No. (Reg. No.)</label>
+                <input id="input-reg" type="text" class="field-input" placeholder="e.g. 1532024009" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. Training Duration & Performance -->
+        <section class="pt-2 border-t border-slate-200">
+          <div class="form-section-title">
+            <span>3. Training Duration &amp; Details</span>
+          </div>
+          <div class="space-y-3">
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label for="input-start-date" class="field-label">From Date</label>
+                <input id="input-start-date" type="date" class="field-input" />
+              </div>
+              <div>
+                <label for="input-end-date" class="field-label">To Date</label>
+                <input id="input-end-date" type="date" class="field-input" />
+              </div>
+            </div>
+
+            <div>
+              <label for="input-training-type" class="field-label">Training Type</label>
+              <input id="input-training-type" type="text" class="field-input" placeholder="e.g. Plant Training" />
+            </div>
+
+            <div>
+              <label for="input-training-place" class="field-label">Training Division / Location (in body)</label>
+              <input id="input-training-place" type="text" class="field-input" placeholder="e.g. ELECTRIC SUPPLY DIVISION MANPUR, GAYA" />
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label for="input-attendance" class="field-label">Attendance</label>
+                <input id="input-attendance" type="text" class="field-input" placeholder="e.g. 100%" />
+              </div>
+              <div>
+                <label for="input-pronoun" class="field-label">Pronoun</label>
+                <select id="input-pronoun" class="field-input">
+                  <option value="him|his">him / his</option>
+                  <option value="her|her">her / her</option>
+                  <option value="them|their">them / their</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label for="input-performance" class="field-label">Performance Remark</label>
+              <input id="input-performance" type="text" class="field-input" placeholder="e.g. Very Good and Satisfactory" />
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. Official Footer (Ref No. Blank by Default) & Header Settings -->
+        <section class="pt-2 border-t border-slate-200">
+          <div class="form-section-title">
+            <span>4. Division, Ref No. &amp; Signatory</span>
+          </div>
+          <div class="space-y-3">
+            <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-900">
+              <strong>Ref. No. &amp; Date are kept blank by default</strong> so the official can fill them by hand or stamp and sign above the designation.
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label for="input-ref" class="field-label">Ref. No. <span class="text-slate-400 font-normal">(optional)</span></label>
+                <input id="input-ref" type="text" class="field-input" placeholder="Leave blank for official" />
+              </div>
+              <div>
+                <label for="input-issue-date" class="field-label">Issue Date <span class="text-slate-400 font-normal">(optional)</span></label>
+                <input id="input-issue-date" type="text" class="field-input" placeholder="Leave blank or DD.MM.YYYY" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label for="input-place" class="field-label">Place (Footer)</label>
+                <input id="input-place" type="text" class="field-input" placeholder="e.g. Manpur" />
+              </div>
+              <div class="flex items-end pb-1">
+                <label class="inline-flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer">
+                  <input id="toggle-blank-lines" type="checkbox" class="rounded accent-blue-600" />
+                  Show dotted guide lines when blank
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <label for="input-company-title" class="field-label">Arched Company Title</label>
+              <input id="input-company-title" type="text" class="field-input" />
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label for="input-header-line1" class="field-label">Header Division Line 1</label>
+                <input id="input-header-line1" type="text" class="field-input" />
+              </div>
+              <div>
+                <label for="input-header-line2" class="field-label">Header Division Line 2</label>
+                <input id="input-header-line2" type="text" class="field-input" />
+              </div>
+            </div>
+
+            <div>
+              <label for="input-sign-designation" class="field-label">Signatory Designation</label>
+              <input id="input-sign-designation" type="text" class="field-input" />
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label for="input-sign-office1" class="field-label">Signatory Office Line 1</label>
+                <input id="input-sign-office1" type="text" class="field-input" />
+              </div>
+              <div>
+                <label for="input-sign-office2" class="field-label">Signatory Office Line 2</label>
+                <input id="input-sign-office2" type="text" class="field-input" />
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-4 pt-1">
+              <label class="inline-flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer">
+                <input id="toggle-seal" type="checkbox" checked class="rounded accent-blue-600" />
+                Show "CERTIFIED" Ribbon Seal
+              </label>
+              <label class="inline-flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer">
+                <input id="toggle-watermark" type="checkbox" checked class="rounded accent-blue-600" />
+                Show Tower Watermark
+              </label>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </aside>
+
+    <!-- Right Live A4 Landscape Preview -->
+    <section id="preview-wrapper" class="flex-1 flex flex-col bg-slate-200/80 min-w-0 lg:h-[calc(100vh-61px)] overflow-auto">
+      <!-- Preview Sub-bar -->
+      <div class="no-print flex flex-wrap items-center justify-between gap-2 px-4 sm:px-6 py-2.5 bg-slate-100 border-b border-slate-200 text-xs text-slate-600">
+        <div class="flex items-center gap-2">
+          <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+          <span class="font-semibold text-slate-700">Live A4 Landscape Preview</span>
+          <span class="hidden sm:inline text-slate-400">·</span>
+          <span class="hidden sm:inline">297 mm × 210 mm (Enable "Background graphics" in Print dialog)</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <button id="zoom-fit" type="button" class="px-2.5 py-1 rounded bg-white border border-slate-300 font-semibold text-blue-700 cursor-pointer">Fit</button>
+          <button id="zoom-75" type="button" class="px-2.5 py-1 rounded bg-white border border-slate-300 font-medium text-slate-700 hover:bg-slate-50 cursor-pointer">75%</button>
+          <button id="zoom-100" type="button" class="px-2.5 py-1 rounded bg-white border border-slate-300 font-medium text-slate-700 hover:bg-slate-50 cursor-pointer">100%</button>
+        </div>
+      </div>
+
+      <!-- Scaled A4 Container -->
+      <div id="preview-canvas-area" class="flex-1 flex items-start justify-center p-4 sm:p-8 overflow-auto">
+        <div id="preview-scaler">
+          <div id="certificate-stage">
+            <div class="cert-outer-pad">
+              <div class="cert-border-box">
+
+                <!-- Subtle High-Voltage Transmission Tower Watermark -->
+                <div id="cert-watermark" class="cert-watermark" aria-hidden="true">
+                  <svg viewBox="0 0 360 440" width="350" height="430" fill="none" stroke="#1e293b" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">
+                    <!-- Main Spire & Legs -->
+                    <path d="M180 18 L156 120 L132 250 L92 425" />
+                    <path d="M180 18 L204 120 L228 250 L268 425" />
+                    <!-- Inner Leg Arch -->
+                    <path d="M132 250 L180 325 L228 250" />
+                    <path d="M112 340 L180 390 L248 340" />
+                    <!-- Cross Arms -->
+                    <path d="M162 92 L95 110 L156 120" />
+                    <path d="M198 92 L265 110 L204 120" />
+                    <path d="M150 155 L52 182 L144 196" />
+                    <path d="M210 155 L308 182 L216 196" />
+                    <path d="M138 225 L36 254 L132 268" />
+                    <path d="M222 225 L324 254 L228 268" />
+                    <!-- Insulators -->
+                    <line x1="95" y1="110" x2="95" y2="128" stroke-width="4" />
+                    <line x1="265" y1="110" x2="265" y2="128" stroke-width="4" />
+                    <line x1="52" y1="182" x2="52" y2="204" stroke-width="4" />
+                    <line x1="308" y1="182" x2="308" y2="204" stroke-width="4" />
+                    <line x1="36" y1="254" x2="36" y2="278" stroke-width="4" />
+                    <line x1="324" y1="254" x2="324" y2="278" stroke-width="4" />
+                    <!-- Lattice X-Bracing -->
+                    <path d="M164 85 L196 85 M156 120 L204 120 M147 170 L213 170 M139 215 L221 215 M132 250 L228 250 M116 320 L244 320" stroke-width="2.5" />
+                    <path d="M164 85 L204 120 M196 85 L156 120" stroke-width="2.2" />
+                    <path d="M156 120 L213 170 M204 120 L147 170" stroke-width="2.2" />
+                    <path d="M147 170 L221 215 M213 170 L139 215" stroke-width="2.2" />
+                    <path d="M139 215 L228 250 M221 215 L132 250" stroke-width="2.2" />
+                    <path d="M132 250 L244 320 M228 250 L116 320" stroke-width="2.2" />
+                    <path d="M116 320 L262 395 M244 320 L98 395" stroke-width="2.2" />
+                  </svg>
+                </div>
+
+                <!-- Header: Curved Company Title + Logo + Division + CERTIFICATE Pill -->
+                <div class="cert-layer cert-header-wrap">
+                  <svg class="cert-arch-svg" viewBox="0 0 1010 275" aria-label="Company Title Arch">
+                    <defs>
+                      <path id="company-arch-path" d="M 28,192 A 505,210 0 0,1 982,192" />
+                      <filter id="arch-shadow" x="-5%" y="-10%" width="110%" height="130%">
+                        <feDropShadow dx="1.5" dy="2.5" stdDeviation="1.4" flood-color="#93c5fd" flood-opacity="0.85" />
+                      </filter>
+                    </defs>
+                    <text class="cert-arch-text" filter="url(#arch-shadow)">
+                      <textPath id="cert-company-textpath" href="#company-arch-path" startOffset="50%" text-anchor="middle">
+                        SOUTH BIHAR POWER DISTRIBUTION COMPANY LIMITED
+                      </textPath>
+                    </text>
+                  </svg>
+
+                  <div class="cert-center-identity">
+                    <div id="cert-logo-box" class="cert-logo-box" style="width: 96px; height: 96px;">
+                      <!-- Default or uploaded logo injected by JS -->
+                    </div>
+                    <div id="cert-header-line1" class="cert-div-title">ELECTRIC SUPPLY DIVISION</div>
+                    <div id="cert-header-line2" class="cert-div-title">MANPUR, GAYA, BIHAR</div>
+                    <div class="cert-pill-banner">
+                      <span class="cert-pill-text">CERTIFICATE</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Main Certificate Body -->
+                <div class="cert-layer cert-body">
+                  <p>
+                    This is to Certify That
+                    <span id="cert-name" class="cert-underline">ANAND KUMAR GUPTA</span>,
+                    who is student of
+                    <span id="cert-college" class="cert-underline">GOVERNMENT POLYTECHNIC COLLEGE, JEHANABAD (BIHAR)</span>,
+                    Student of
+                    <span id="cert-semester-course" class="cert-strong">5<sup>th</sup> SEMESTER (SESSION : 2024-2027) DIPLOMA IN ELECTRICAL ENGINEERING</span>
+                    having
+                    <span id="cert-roll-reg" class="cert-strong">Roll No.- 009/EE/24, REG. NO.- 1532024009</span>
+                    has attended
+                    <span id="cert-training-type">Plant Training</span>
+                    at
+                    <span id="cert-training-place" class="cert-strong">ELECTRIC SUPPLY DIVISION MANPUR, GAYA</span>
+                    during the period of
+                    <span id="cert-start-date" class="cert-strong">01/06/2026</span>
+                    to
+                    <span id="cert-end-date" class="cert-strong">28/06/2026</span>
+                    with
+                    <span id="cert-attendance">100%</span>
+                    attendance.
+                  </p>
+                  <p>
+                    During the training, performance of the student was found
+                    <span id="cert-performance" class="cert-strong">Very Good and Satisfactory</span>.
+                    We wish <span id="cert-pronoun-obj">him</span> all the best in <span id="cert-pronoun-pos">his</span> future.
+                  </p>
+                </div>
+
+                <!-- Footer: Certified Seal + Blank Ref/Place/Date (Left) & Official Signature Block (Right) -->
+                <div class="cert-layer cert-footer">
+                  <div class="cert-footer-left">
+                    <div id="cert-seal-wrap" class="cert-seal-wrap" style="width: 94px; height: 94px;">
+                      <!-- Default or uploaded Certified seal injected by JS -->
+                    </div>
+
+                    <div class="cert-meta-table">
+                      <div class="cert-meta-row">
+                        <span class="cert-meta-label">Ref.-</span>
+                        <span id="cert-ref" class="cert-meta-value"></span>
+                      </div>
+                      <div class="cert-meta-row">
+                        <span class="cert-meta-label">Place -</span>
+                        <span id="cert-place" class="cert-meta-value" style="color: #111827; font-weight: 600;">Manpur</span>
+                      </div>
+                      <div class="cert-meta-row">
+                        <span class="cert-meta-label">Date :-</span>
+                        <span id="cert-date" class="cert-meta-value"></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="cert-footer-right">
+                    <div class="cert-sign-space" aria-label="Space for official signature"></div>
+                    <div id="cert-sign-designation" class="cert-sign-title">ELECTRICAL EXECUTIVE ENGINEER</div>
+                    <div id="cert-sign-office1" class="cert-sign-sub">ELECTRIC SUPPLY DIVISION,</div>
+                    <div id="cert-sign-office2" class="cert-sign-sub">GAYA, MANPUR (BIHAR)</div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    (function () {
+      const STORAGE_KEY = 'sbpdcl_cert_gen_v1';
+      const DEFAULT_LOGO_URL = 'https://raw.githubusercontent.com/aditya-kr86/sbpdcl-internship-certificate/main/sbpdcl-logo.jpg';
+      const DEFAULT_SEAL_URL = 'https://raw.githubusercontent.com/aditya-kr86/sbpdcl-internship-certificate/main/certified-embel.jpeg';
+
+      const DEFAULT_LOGO_SVG = `
+        <svg viewBox="0 0 120 120" width="100%" height="100%" aria-label="SBPDCL Default Emblem">
+          <circle cx="60" cy="60" r="57" fill="#5c2d23" stroke="#3b1b14" stroke-width="2"/>
+          <circle cx="60" cy="60" r="42" fill="#f8fafc" stroke="#eab308" stroke-width="2.5"/>
+          <circle cx="60" cy="60" r="37" fill="#fef9c3"/>
+          <defs>
+            <path id="emblemTopArc" d="M 15,60 A 45,45 0 0,1 105,60" />
+            <path id="emblemBotArc" d="M 105,60 A 45,45 0 0,1 15,60" />
+          </defs>
+          <text fill="#ffffff" font-family="Arial, sans-serif" font-size="6.4" font-weight="700" letter-spacing="0.4">
+            <textPath href="#emblemTopArc" startOffset="50%" text-anchor="middle">SOUTH BIHAR POWER DISTRIBUTION CO. LTD</textPath>
+          </text>
+          <text fill="#fde047" font-family="Arial, sans-serif" font-size="7.5" font-weight="800" letter-spacing="1.4">
+            <textPath href="#emblemBotArc" startOffset="50%" text-anchor="middle">SBPDCL</textPath>
+          </text>
+          <text x="60" y="64" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="30" font-weight="900">
+            <tspan fill="#15803d">S</tspan><tspan fill="#ea580c">B</tspan>
+          </text>
+          <path d="M 38,76 Q 60,86 82,76" fill="none" stroke="#1d4ed8" stroke-width="3" stroke-linecap="round"/>
+          <path d="M 45,82 Q 60,89 75,82" fill="none" stroke="#ea580c" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+      `;
+
+      const DEFAULT_SEAL_SVG = `
+        <svg viewBox="0 0 180 180" width="100%" height="100%" aria-label="Certified Ribbon Seal">
+          <defs>
+            <linearGradient id="sealGoldGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#d97706"/>
+              <stop offset="50%" stop-color="#f59e0b"/>
+              <stop offset="100%" stop-color="#facc15"/>
+            </linearGradient>
+            <linearGradient id="sealRedGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#e11d48"/>
+              <stop offset="55%" stop-color="#cc2936"/>
+              <stop offset="100%" stop-color="#9f1239"/>
+            </linearGradient>
+            <path id="sealTopTextArc" d="M 55,68 A 35,35 0 0,1 125,68" />
+            <path id="sealBotTextArc" d="M 52,82 A 38,38 0 0,0 128,82" />
+          </defs>
+          <!-- Two downward splayed red swallowtail ribbons -->
+          <g>
+            <polygon points="62,110 88,118 76,174 63,157 44,164" fill="url(#sealRedGrad)" />
+            <polyline points="65,113 49,159" fill="none" stroke="#fda4af" stroke-width="1.2" opacity="0.65" />
+            <polyline points="84,119 74,167" fill="none" stroke="#fda4af" stroke-width="1.2" opacity="0.65" />
+            <polygon points="118,110 92,118 104,174 117,157 136,164" fill="url(#sealRedGrad)" />
+            <polyline points="115,113 131,159" fill="none" stroke="#fda4af" stroke-width="1.2" opacity="0.65" />
+            <polyline points="96,119 106,167" fill="none" stroke="#fda4af" stroke-width="1.2" opacity="0.65" />
+          </g>
+          <!-- Golden scalloped rosette seal (24 scallops) -->
+          <g transform="translate(90, 74)">
+            <path fill="url(#sealGoldGrad)" stroke="#b45309" stroke-width="1" d="
+              M 0,-60
+              C 4,-60 6,-54 10,-53 C 14,-52 19,-57 23,-55 C 27,-53 26,-47 30,-44 C 34,-42 40,-44 43,-41
+              C 46,-38 43,-32 45,-28 C 48,-24 55,-24 56,-20 C 58,-16 53,-12 54,-7 C 55,-3 61,-1 61,4
+              C 61,8 55,10 54,14 C 53,19 57,23 55,27 C 53,31 46,30 44,34 C 41,38 44,44 40,47
+              C 37,50 31,46 27,48 C 23,51 23,57 18,58 C 14,60 10,54 5,55 C 1,56 -1,61 -5,61
+              C -10,61 -12,55 -16,54 C -20,53 -24,57 -28,55 C -32,53 -31,46 -35,44 C -39,41 -45,44 -48,40
+              C -51,37 -47,31 -49,27 C -51,23 -58,23 -59,18 C -60,14 -55,10 -56,5 C -56,1 -61,-1 -61,-6
+              C -60,-10 -55,-12 -54,-16 C -52,-20 -56,-25 -54,-29 C -52,-33 -46,-32 -43,-35 C -40,-39 -43,-45 -39,-48
+              C -35,-51 -30,-47 -26,-49 C -22,-51 -21,-57 -17,-58 C -13,-59 -9,-54 -5,-55 C -2,-55 -1,-60 0,-60 Z
+            " />
+            <circle r="44" fill="#fef3c7" stroke="#d97706" stroke-width="2" />
+            <circle r="41" fill="#ffffff" />
+          </g>
+          <!-- Arched top & bottom CERTIFIED text inside white disc -->
+          <text fill="#1e293b" font-family="Arial, sans-serif" font-size="9.5" font-weight="800" letter-spacing="1.6">
+            <textPath href="#sealTopTextArc" startOffset="50%" text-anchor="middle">CERTIFIED</textPath>
+          </text>
+          <text fill="#1e293b" font-family="Arial, sans-serif" font-size="9.5" font-weight="800" letter-spacing="1.6">
+            <textPath href="#sealBotTextArc" startOffset="50%" text-anchor="middle">CERTIFIED</textPath>
+          </text>
+          <!-- Ribbon side tails behind main banner -->
+          <polygon points="10,60 36,60 36,92 10,92 22,76" fill="#b91c1c" />
+          <polygon points="170,60 144,60 144,92 170,92 158,76" fill="#b91c1c" />
+          <!-- Fold shadows -->
+          <polygon points="27,86 36,86 36,94" fill="#7f1d1d" />
+          <polygon points="153,86 144,86 144,94" fill="#7f1d1d" />
+          <!-- Center horizontal crimson banner -->
+          <rect x="27" y="54" width="126" height="32" rx="1.5" fill="url(#sealRedGrad)" />
+          <text x="90" y="77" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-weight="800" font-size="20.5" letter-spacing="1.2">CERTIFIED</text>
+        </svg>
+      `;
+
+      const SAMPLE_STATE = {
+        name: 'ANAND KUMAR GUPTA',
+        college: 'GOVERNMENT POLYTECHNIC COLLEGE, JEHANABAD (BIHAR)',
+        semester: '5th SEMESTER',
+        session: '2024-2027',
+        course: 'DIPLOMA IN ELECTRICAL ENGINEERING',
+        roll: '009/EE/24',
+        reg: '1532024009',
+        startDate: '2026-06-01',
+        endDate: '2026-06-28',
+        trainingType: 'Plant Training',
+        trainingPlace: 'ELECTRIC SUPPLY DIVISION MANPUR, GAYA',
+        attendance: '100%',
+        pronoun: 'him|his',
+        performance: 'Very Good and Satisfactory',
+        refNo: '',
+        issueDate: '',
+        place: 'Manpur',
+        blankLines: false,
+        companyTitle: 'SOUTH BIHAR POWER DISTRIBUTION COMPANY LIMITED',
+        headerLine1: 'ELECTRIC SUPPLY DIVISION',
+        headerLine2: 'MANPUR, GAYA, BIHAR',
+        signDesignation: 'ELECTRICAL EXECUTIVE ENGINEER',
+        signOffice1: 'ELECTRIC SUPPLY DIVISION,',
+        signOffice2: 'GAYA, MANPUR (BIHAR)',
+        showSeal: true,
+        showWatermark: true,
+        logoDataUrl: '',
+        logoFileName: '',
+        logoSize: 96,
+        sealDataUrl: '',
+        sealFileName: '',
+        sealSize: 94
+      };
+
+      let state = { ...SAMPLE_STATE };
+      let zoomMode = 'fit';
+      let toastTimer = null;
+
+      // DOM elements
+      const els = {
+        inputLogo: document.getElementById('input-logo'),
+        btnResetLogo: document.getElementById('btn-reset-logo'),
+        logoThumbBox: document.getElementById('logo-thumb-box'),
+        logoFilename: document.getElementById('logo-filename'),
+        inputLogoSize: document.getElementById('input-logo-size'),
+        logoSizeReadout: document.getElementById('logo-size-readout'),
+        inputSeal: document.getElementById('input-seal'),
+        btnResetSeal: document.getElementById('btn-reset-seal'),
+        sealThumbBox: document.getElementById('seal-thumb-box'),
+        sealFilename: document.getElementById('seal-filename'),
+        inputSealSize: document.getElementById('input-seal-size'),
+        sealSizeReadout: document.getElementById('seal-size-readout'),
+
+        inputName: document.getElementById('input-name'),
+        inputCollege: document.getElementById('input-college'),
+        inputSemester: document.getElementById('input-semester'),
+        inputSession: document.getElementById('input-session'),
+        inputCourse: document.getElementById('input-course'),
+        inputRoll: document.getElementById('input-roll'),
+        inputReg: document.getElementById('input-reg'),
+        inputStartDate: document.getElementById('input-start-date'),
+        inputEndDate: document.getElementById('input-end-date'),
+        inputTrainingType: document.getElementById('input-training-type'),
+        inputTrainingPlace: document.getElementById('input-training-place'),
+        inputAttendance: document.getElementById('input-attendance'),
+        inputPronoun: document.getElementById('input-pronoun'),
+        inputPerformance: document.getElementById('input-performance'),
+        inputRef: document.getElementById('input-ref'),
+        inputIssueDate: document.getElementById('input-issue-date'),
+        inputPlace: document.getElementById('input-place'),
+        toggleBlankLines: document.getElementById('toggle-blank-lines'),
+        inputCompanyTitle: document.getElementById('input-company-title'),
+        inputHeaderLine1: document.getElementById('input-header-line1'),
+        inputHeaderLine2: document.getElementById('input-header-line2'),
+        inputSignDesignation: document.getElementById('input-sign-designation'),
+        inputSignOffice1: document.getElementById('input-sign-office1'),
+        inputSignOffice2: document.getElementById('input-sign-office2'),
+        toggleSeal: document.getElementById('toggle-seal'),
+        toggleWatermark: document.getElementById('toggle-watermark'),
+
+        certCompanyTextpath: document.getElementById('cert-company-textpath'),
+        certLogoBox: document.getElementById('cert-logo-box'),
+        certHeaderLine1: document.getElementById('cert-header-line1'),
+        certHeaderLine2: document.getElementById('cert-header-line2'),
+        certName: document.getElementById('cert-name'),
+        certCollege: document.getElementById('cert-college'),
+        certSemesterCourse: document.getElementById('cert-semester-course'),
+        certRollReg: document.getElementById('cert-roll-reg'),
+        certTrainingType: document.getElementById('cert-training-type'),
+        certTrainingPlace: document.getElementById('cert-training-place'),
+        certStartDate: document.getElementById('cert-start-date'),
+        certEndDate: document.getElementById('cert-end-date'),
+        certAttendance: document.getElementById('cert-attendance'),
+        certPerformance: document.getElementById('cert-performance'),
+        certPronounObj: document.getElementById('cert-pronoun-obj'),
+        certPronounPos: document.getElementById('cert-pronoun-pos'),
+        certRef: document.getElementById('cert-ref'),
+        certPlace: document.getElementById('cert-place'),
+        certDate: document.getElementById('cert-date'),
+        certSignDesignation: document.getElementById('cert-sign-designation'),
+        certSignOffice1: document.getElementById('cert-sign-office1'),
+        certSignOffice2: document.getElementById('cert-sign-office2'),
+        certSealWrap: document.getElementById('cert-seal-wrap'),
+        certWatermark: document.getElementById('cert-watermark'),
+
+        btnNextStudent: document.getElementById('btn-next-student'),
+        btnResetSample: document.getElementById('btn-reset-sample'),
+        btnPrint: document.getElementById('btn-print'),
+        zoomFit: document.getElementById('zoom-fit'),
+        zoom75: document.getElementById('zoom-75'),
+        zoom100: document.getElementById('zoom-100'),
+        previewCanvasArea: document.getElementById('preview-canvas-area'),
+        previewScaler: document.getElementById('preview-scaler'),
+        certificateStage: document.getElementById('certificate-stage'),
+        toast: document.getElementById('toast')
+      };
+
+      function showToast(msg) {
+        els.toast.textContent = msg;
+        els.toast.classList.remove('hidden');
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          els.toast.classList.add('hidden');
+        }, 3000);
+      }
+
+      function escapeHtml(str) {
+        return String(str || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function formatOrdinalHtml(text) {
+        const safe = escapeHtml(text);
+        return safe.replace(/\b(\d+)(st|nd|rd|th)\b/gi, '$1<sup>$2</sup>');
+      }
+
+      function formatDateDDMMYYYY(isoStr) {
+        if (!isoStr) return '___/___/______';
+        const parts = isoStr.split('-');
+        if (parts.length !== 3) return isoStr;
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+      }
+
+      function loadSavedState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed && typeof parsed === 'object') {
+              state = { ...SAMPLE_STATE, ...parsed };
+            }
+          }
+        } catch (e) {
+          // Ignore storage errors in restricted contexts
+        }
+      }
+
+      function persistState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {
+          // Ignore quota or storage errors
+        }
+      }
+
+      function syncInputsFromState() {
+        els.inputName.value = state.name;
+        els.inputCollege.value = state.college;
+        els.inputSemester.value = state.semester;
+        els.inputSession.value = state.session;
+        els.inputCourse.value = state.course;
+        els.inputRoll.value = state.roll;
+        els.inputReg.value = state.reg;
+        els.inputStartDate.value = state.startDate;
+        els.inputEndDate.value = state.endDate;
+        els.inputTrainingType.value = state.trainingType;
+        els.inputTrainingPlace.value = state.trainingPlace;
+        els.inputAttendance.value = state.attendance;
+        els.inputPronoun.value = state.pronoun;
+        els.inputPerformance.value = state.performance;
+        els.inputRef.value = state.refNo;
+        els.inputIssueDate.value = state.issueDate;
+        els.inputPlace.value = state.place;
+        els.toggleBlankLines.checked = Boolean(state.blankLines);
+        els.inputCompanyTitle.value = state.companyTitle;
+        els.inputHeaderLine1.value = state.headerLine1;
+        els.inputHeaderLine2.value = state.headerLine2;
+        els.inputSignDesignation.value = state.signDesignation;
+        els.inputSignOffice1.value = state.signOffice1;
+        els.inputSignOffice2.value = state.signOffice2;
+        els.toggleSeal.checked = Boolean(state.showSeal);
+        els.toggleWatermark.checked = Boolean(state.showWatermark);
+        els.inputLogoSize.value = String(state.logoSize);
+        els.logoSizeReadout.textContent = `${state.logoSize} px`;
+        els.inputSealSize.value = String(state.sealSize);
+        els.sealSizeReadout.textContent = `${state.sealSize} px`;
+      }
+
+      function mountImageWithFallback(container, src, alt, fallbackSvg) {
+        container.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = alt;
+        img.addEventListener('error', () => {
+          container.innerHTML = fallbackSvg;
+        });
+        container.appendChild(img);
+      }
+
+      function renderLogo() {
+        const size = Number(state.logoSize) || 96;
+        els.certLogoBox.style.width = `${size}px`;
+        els.certLogoBox.style.height = `${size}px`;
+
+        if (state.logoDataUrl) {
+          mountImageWithFallback(els.certLogoBox, state.logoDataUrl, 'SBPDCL Logo', DEFAULT_LOGO_SVG);
+          mountImageWithFallback(els.logoThumbBox, state.logoDataUrl, 'SBPDCL Logo', DEFAULT_LOGO_SVG);
+          els.logoFilename.textContent = state.logoFileName || 'Custom logo uploaded';
+        } else {
+          mountImageWithFallback(els.certLogoBox, DEFAULT_LOGO_URL, 'SBPDCL Logo', DEFAULT_LOGO_SVG);
+          mountImageWithFallback(els.logoThumbBox, DEFAULT_LOGO_URL, 'SBPDCL Logo', DEFAULT_LOGO_SVG);
+          els.logoFilename.textContent = 'Default: sbpdcl-logo.jpg (GitHub)';
+        }
+      }
+
+      function renderSeal() {
+        const size = Number(state.sealSize) || 94;
+        els.certSealWrap.style.width = `${size}px`;
+        els.certSealWrap.style.height = `${size}px`;
+
+        if (state.sealDataUrl) {
+          mountImageWithFallback(els.certSealWrap, state.sealDataUrl, 'Certified Seal', DEFAULT_SEAL_SVG);
+          mountImageWithFallback(els.sealThumbBox, state.sealDataUrl, 'Certified Seal', DEFAULT_SEAL_SVG);
+          els.sealFilename.textContent = state.sealFileName || 'Custom seal uploaded';
+        } else {
+          mountImageWithFallback(els.certSealWrap, DEFAULT_SEAL_URL, 'Certified Seal', DEFAULT_SEAL_SVG);
+          mountImageWithFallback(els.sealThumbBox, DEFAULT_SEAL_URL, 'Certified Seal', DEFAULT_SEAL_SVG);
+          els.sealFilename.textContent = 'Default: certified-embel.jpeg (GitHub)';
+        }
+      }
+
+      function renderCertificate() {
+        // Header
+        const compTitle = (state.companyTitle || 'SOUTH BIHAR POWER DISTRIBUTION COMPANY LIMITED').trim().toUpperCase();
+        els.certCompanyTextpath.textContent = compTitle;
+        // Dynamically adjust font size if company title is very long
+        const archTextEl = els.certCompanyTextpath.parentElement;
+        if (compTitle.length > 56) {
+          archTextEl.style.fontSize = '22px';
+        } else if (compTitle.length > 48) {
+          archTextEl.style.fontSize = '25px';
+        } else {
+          archTextEl.style.fontSize = '27.5px';
+        }
+
+        els.certHeaderLine1.textContent = (state.headerLine1 || '').trim() || 'ELECTRIC SUPPLY DIVISION';
+        els.certHeaderLine2.textContent = (state.headerLine2 || '').trim() || 'MANPUR, GAYA, BIHAR';
+
+        // Student & Course
+        els.certName.textContent = (state.name || '').trim() || '__________________________';
+        els.certCollege.textContent = (state.college || '').trim() || '________________________________________';
+
+        const semPart = (state.semester || '').trim();
+        const sessPart = (state.session || '').trim();
+        const coursePart = (state.course || '').trim();
+        let combinedCourse = '';
+        if (semPart) combinedCourse += formatOrdinalHtml(semPart);
+        if (sessPart) combinedCourse += (combinedCourse ? ' ' : '') + `(SESSION : ${escapeHtml(sessPart)})`;
+        if (coursePart) combinedCourse += (combinedCourse ? ' ' : '') + escapeHtml(coursePart);
+        els.certSemesterCourse.innerHTML = combinedCourse || '____________________________';
+
+        const rollVal = (state.roll || '').trim();
+        const regVal = (state.reg || '').trim();
+        const idParts = [];
+        if (rollVal) idParts.push(`Roll No.- ${rollVal}`);
+        if (regVal) idParts.push(`REG. NO.- ${regVal}`);
+        els.certRollReg.textContent = idParts.length ? idParts.join(', ') : 'Roll No.- ________, REG. NO.- ____________';
+
+        // Training details
+        els.certTrainingType.textContent = (state.trainingType || '').trim() || 'Plant Training';
+        els.certTrainingPlace.textContent = (state.trainingPlace || '').trim() || 'ELECTRIC SUPPLY DIVISION';
+        els.certStartDate.textContent = formatDateDDMMYYYY(state.startDate);
+        els.certEndDate.textContent = formatDateDDMMYYYY(state.endDate);
+        els.certAttendance.textContent = (state.attendance || '').trim() || '100%';
+        els.certPerformance.textContent = (state.performance || '').trim() || 'Very Good and Satisfactory';
+
+        const [objP, posP] = (state.pronoun || 'him|his').split('|');
+        els.certPronounObj.textContent = objP || 'him';
+        els.certPronounPos.textContent = posP || 'his';
+
+        // Footer: Ref No. & Date (Blank by default!)
+        const refVal = (state.refNo || '').trim();
+        if (refVal) {
+          els.certRef.innerHTML = escapeHtml(refVal);
+        } else {
+          els.certRef.innerHTML = state.blankLines ? '<span class="cert-meta-blank-line"></span>' : '&nbsp;';
+        }
+
+        els.certPlace.textContent = (state.place || '').trim();
+
+        const dateVal = (state.issueDate || '').trim();
+        if (dateVal) {
+          els.certDate.innerHTML = escapeHtml(dateVal);
+        } else {
+          els.certDate.innerHTML = state.blankLines ? '<span class="cert-meta-blank-line"></span>' : '&nbsp;';
+        }
+
+        // Signatory
+        els.certSignDesignation.textContent = (state.signDesignation || '').trim() || 'ELECTRICAL EXECUTIVE ENGINEER';
+        els.certSignOffice1.textContent = (state.signOffice1 || '').trim();
+        els.certSignOffice2.textContent = (state.signOffice2 || '').trim();
+
+        // Toggles
+        els.certSealWrap.style.visibility = state.showSeal ? 'visible' : 'hidden';
+        els.certWatermark.style.display = state.showWatermark ? 'flex' : 'none';
+
+        renderLogo();
+        renderSeal();
+        persistState();
+      }
+
+      function updatePreviewScale() {
+        const baseW = 1122;
+        const baseH = 794;
+        let scale = 1;
+
+        if (zoomMode === 'fit') {
+          const areaRect = els.previewCanvasArea.getBoundingClientRect();
+          const availW = Math.max(280, areaRect.width - 48);
+          const availH = Math.max(220, areaRect.height - 48);
+          scale = Math.min(availW / baseW, availH / baseH, 1);
+          if (window.innerWidth < 1024) {
+            scale = Math.min(availW / baseW, 1);
+          }
+        } else if (zoomMode === '75') {
+          scale = 0.75;
+        } else {
+          scale = 1;
+        }
+
+        els.certificateStage.style.transform = `scale(${scale})`;
+        els.previewScaler.style.width = `${Math.round(baseW * scale)}px`;
+        els.previewScaler.style.height = `${Math.round(baseH * scale)}px`;
+
+        // Update active zoom button styles
+        const btns = [
+          { el: els.zoomFit, mode: 'fit' },
+          { el: els.zoom75, mode: '75' },
+          { el: els.zoom100, mode: '100' }
+        ];
+        btns.forEach(({ el, mode }) => {
+          if (mode === zoomMode) {
+            el.className = 'px-2.5 py-1 rounded bg-blue-50 border border-blue-400 font-semibold text-blue-700 cursor-pointer';
+          } else {
+            el.className = 'px-2.5 py-1 rounded bg-white border border-slate-300 font-medium text-slate-700 hover:bg-slate-50 cursor-pointer';
+          }
+        });
+      }
+
+      function bindField(el, key, isCheckbox = false) {
+        const evt = isCheckbox || el.tagName === 'SELECT' || el.type === 'date' ? 'change' : 'input';
+        el.addEventListener(evt, () => {
+          state[key] = isCheckbox ? el.checked : el.value;
+          renderCertificate();
+        });
+      }
+
+      // Bind all inputs
+      bindField(els.inputName, 'name');
+      bindField(els.inputCollege, 'college');
+      bindField(els.inputSemester, 'semester');
+      bindField(els.inputSession, 'session');
+      bindField(els.inputCourse, 'course');
+      bindField(els.inputRoll, 'roll');
+      bindField(els.inputReg, 'reg');
+      bindField(els.inputStartDate, 'startDate');
+      bindField(els.inputEndDate, 'endDate');
+      bindField(els.inputTrainingType, 'trainingType');
+      bindField(els.inputTrainingPlace, 'trainingPlace');
+      bindField(els.inputAttendance, 'attendance');
+      bindField(els.inputPronoun, 'pronoun');
+      bindField(els.inputPerformance, 'performance');
+      bindField(els.inputRef, 'refNo');
+      bindField(els.inputIssueDate, 'issueDate');
+      bindField(els.inputPlace, 'place');
+      bindField(els.toggleBlankLines, 'blankLines', true);
+      bindField(els.inputCompanyTitle, 'companyTitle');
+      bindField(els.inputHeaderLine1, 'headerLine1');
+      bindField(els.inputHeaderLine2, 'headerLine2');
+      bindField(els.inputSignDesignation, 'signDesignation');
+      bindField(els.inputSignOffice1, 'signOffice1');
+      bindField(els.inputSignOffice2, 'signOffice2');
+      bindField(els.toggleSeal, 'showSeal', true);
+      bindField(els.toggleWatermark, 'showWatermark', true);
+
+      els.inputLogoSize.addEventListener('input', () => {
+        state.logoSize = Number(els.inputLogoSize.value);
+        els.logoSizeReadout.textContent = `${state.logoSize} px`;
+        renderLogo();
+        persistState();
+      });
+
+      els.inputLogo.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          state.logoDataUrl = String(ev.target.result || '');
+          state.logoFileName = file.name;
+          renderLogo();
+          persistState();
+          showToast(`Logo "${file.name}" applied`);
+        };
+        reader.readAsDataURL(file);
+      });
+
+      els.btnResetLogo.addEventListener('click', () => {
+        state.logoDataUrl = '';
+        state.logoFileName = '';
+        els.inputLogo.value = '';
+        renderLogo();
+        persistState();
+        showToast('Restored default SBPDCL emblem');
+      });
+
+      els.inputSealSize.addEventListener('input', () => {
+        state.sealSize = Number(els.inputSealSize.value);
+        els.sealSizeReadout.textContent = `${state.sealSize} px`;
+        renderSeal();
+        persistState();
+      });
+
+      els.inputSeal.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          state.sealDataUrl = String(ev.target.result || '');
+          state.sealFileName = file.name;
+          renderSeal();
+          persistState();
+          showToast(`Seal "${file.name}" applied`);
+        };
+        reader.readAsDataURL(file);
+      });
+
+      els.btnResetSeal.addEventListener('click', () => {
+        state.sealDataUrl = '';
+        state.sealFileName = '';
+        els.inputSeal.value = '';
+        renderSeal();
+        persistState();
+        showToast('Restored default Certified seal');
+      });
+
+      els.btnNextStudent.addEventListener('click', () => {
+        state.name = '';
+        state.roll = '';
+        state.reg = '';
+        state.refNo = '';
+        state.issueDate = '';
+        syncInputsFromState();
+        renderCertificate();
+        els.inputName.focus();
+        showToast('Cleared student details — logo & division kept');
+      });
+
+      els.btnResetSample.addEventListener('click', () => {
+        const keptLogo = state.logoDataUrl;
+        const keptLogoName = state.logoFileName;
+        const keptSeal = state.sealDataUrl;
+        const keptSealName = state.sealFileName;
+        state = {
+          ...SAMPLE_STATE,
+          logoDataUrl: keptLogo,
+          logoFileName: keptLogoName,
+          sealDataUrl: keptSeal,
+          sealFileName: keptSealName
+        };
+        syncInputsFromState();
+        renderCertificate();
+        showToast('Loaded sample certificate details');
+      });
+
+      els.btnPrint.addEventListener('click', () => {
+        showToast('Opening A4 Landscape print dialog — enable Background graphics');
+        window.print();
+      });
+
+      els.zoomFit.addEventListener('click', () => { zoomMode = 'fit'; updatePreviewScale(); });
+      els.zoom75.addEventListener('click', () => { zoomMode = '75'; updatePreviewScale(); });
+      els.zoom100.addEventListener('click', () => { zoomMode = '100'; updatePreviewScale(); });
+
+      window.addEventListener('resize', updatePreviewScale);
+
+      // Initialize
+      loadSavedState();
+      syncInputsFromState();
+      renderCertificate();
+      requestAnimationFrame(updatePreviewScale);
+    })();
+  </script>
+</body>
+</html>
